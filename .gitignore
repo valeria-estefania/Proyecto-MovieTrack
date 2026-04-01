@@ -43,3 +43,21 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ========================
+# Backend Python
+# ========================
+
+# Variables secretas
+backend/.env
+
+# Caché de Python
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Entorno virtual (por si acaso lo crean después)
+backend/venv/
+backend/env/
+backend/.venv/
