@@ -84,18 +84,29 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _navigateToDetail(Map<String, dynamic> item, String type) {
-    final tmdbId = item['id'];
+ void _navigateToDetail(Map<String, dynamic> item, String type) async {
+  try {
+    final content = await ContentService.getOrCreateContent(item, type);
+    if (!mounted) return;
     Navigator.pushNamed(
       context,
       '/detail',
       arguments: {
-        'contentId': tmdbId,
-        'tmdbId': tmdbId,
-        'type': type,
+        'contentId': content.idContent,
+        'tmdbId': content.tmdbId,
+        'type': content.type,
       },
     );
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Error al cargar el contenido'),
+        backgroundColor: Color(0xFFE50914),
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('MOVIETRACK',
             style: TextStyle(
                 color: Color(0xFFE50914),
