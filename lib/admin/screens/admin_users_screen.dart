@@ -4,6 +4,7 @@ import '../../config/constants.dart';
 import '../../models/user.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/admin_service.dart';
+import '../../screens/profile/user_profile_screen.dart';
 import '../widgets/admin_sidebar.dart';
 
 class AdminUsersScreen extends StatefulWidget {
@@ -223,7 +224,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                         Expanded(flex: 3, child: Text('Email', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600))),
                         Expanded(flex: 2, child: Text('Registro', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600))),
                         Expanded(flex: 1, child: Text('Rol', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600))),
-                        SizedBox(width: 100, child: Text('Acciones', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600))),
+                        SizedBox(width: 130, child: Text('Acciones', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600))),
                       ],
                     ),
                   ),
@@ -241,6 +242,15 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                               user: _filtered[i],
                               onDelete: () => _deleteUser(_filtered[i]),
                               onChangeRole: () => _changeRole(_filtered[i]),
+                              onViewProfile: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => UserProfileScreen(
+                                    idUser: _filtered[i].idUser,
+                                    initialName: _filtered[i].name,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                   ),
@@ -258,11 +268,13 @@ class _UserRow extends StatelessWidget {
   final User user;
   final VoidCallback onDelete;
   final VoidCallback onChangeRole;
+  final VoidCallback onViewProfile;
 
   const _UserRow({
     required this.user,
     required this.onDelete,
     required this.onChangeRole,
+    required this.onViewProfile,
   });
 
   @override
@@ -349,10 +361,18 @@ class _UserRow extends StatelessWidget {
           ),
           // Acciones
           SizedBox(
-            width: 100,
+            width: 130,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                Tooltip(
+                  message: 'Ver perfil completo',
+                  child: IconButton(
+                    icon: const Icon(Icons.person_search_rounded,
+                        color: Colors.teal, size: 18),
+                    onPressed: onViewProfile,
+                  ),
+                ),
                 Tooltip(
                   message: isAdmin ? 'Quitar admin' : 'Hacer admin',
                   child: IconButton(

@@ -198,29 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 32),
 
-            // ── Botón Admin Panel (solo si es admin) ──────────────────
-            if (isAdmin) ...[
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton.icon(
-                  onPressed: _goToAdminPanel,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE50914),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                  icon: const Icon(Icons.admin_panel_settings_rounded,
-                      color: Colors.white),
-                  label: const Text(
-                    'Ir al Panel de Administración',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
+            const SizedBox(height: 32),
 
             // Formulario edición
             if (_isEditing) ...[

@@ -14,6 +14,78 @@ class AdminService {
     throw Exception('Error al obtener estadísticas');
   }
 
+  static Future<List<Map<String, dynamic>>> getScoreDistribution(String token) async {
+    final res = await http.get(
+      Uri.parse('${AppConstants.adminUrl}/stats/scores'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body);
+      return data.cast<Map<String, dynamic>>();
+    }
+    throw Exception('Error al obtener distribución de scores');
+  }
+
+  static Future<List<Map<String, dynamic>>> getRegistrosPorMes(String token) async {
+    final res = await http.get(
+      Uri.parse('${AppConstants.adminUrl}/stats/registros-por-mes'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body);
+      return data.cast<Map<String, dynamic>>();
+    }
+    throw Exception('Error al obtener registros por mes');
+  }
+
+  static Future<List<Map<String, dynamic>>> getFavoritosPorTipo(String token) async {
+    final res = await http.get(
+      Uri.parse('${AppConstants.adminUrl}/stats/favoritos-por-tipo'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body);
+      return data.cast<Map<String, dynamic>>();
+    }
+    throw Exception('Error al obtener favoritos por tipo');
+  }
+
+  static Future<List<Map<String, dynamic>>> getUsuariosActivos(String token) async {
+    final res = await http.get(
+      Uri.parse('${AppConstants.adminUrl}/stats/usuarios-activos'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body);
+      return data.cast<Map<String, dynamic>>();
+    }
+    throw Exception('Error al obtener usuarios activos');
+  }
+
+  static Future<List<Map<String, dynamic>>> getTopFavoritos(String token) async {
+    final res = await http.get(
+      Uri.parse('${AppConstants.adminUrl}/top/favoritos'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body);
+      return data.cast<Map<String, dynamic>>();
+    }
+    throw Exception('Error al obtener top favoritos');
+  }
+
+  static Future<List<Map<String, dynamic>>> getTopReviews(String token) async {
+    final res = await http.get(
+      Uri.parse('${AppConstants.adminUrl}/top/reviews'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+    if (res.statusCode == 200) {
+      final List data = jsonDecode(res.body);
+      return data.cast<Map<String, dynamic>>();
+    }
+    throw Exception('Error al obtener top reviews');
+  }
+
   // ─── Users ───────────────────────────────────────────────────
   static Future<List<User>> getUsers(String token) async {
     final res = await http.get(

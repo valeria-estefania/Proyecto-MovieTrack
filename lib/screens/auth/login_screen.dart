@@ -34,9 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (authProvider.isAuthenticated) {
-      await userProvider.loadUserData();
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, '/home');
+      if (authProvider.isAdmin) {
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, '/admin');
+      } else {
+        await userProvider.loadUserData();
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     }
   }
 

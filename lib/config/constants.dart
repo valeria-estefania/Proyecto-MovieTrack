@@ -1,7 +1,7 @@
 class AppConstants {
   // URL base del backend en Render
-  static const String baseUrl = 'https://proyecto-movietrack-backend.onrender.com';
-
+  //static const String baseUrl = 'https://proyecto-movietrack-backend.onrender.com';
+  static const String baseUrl = 'http://127.0.0.1:8000';
   // Endpoints de autenticación
   static const String registerUrl = '$baseUrl/auth/register';
   static const String loginUrl = '$baseUrl/auth/login';

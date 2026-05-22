@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../config/constants.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/user_provider.dart';
 import '../screens/admin_dashboard.dart';
 import '../screens/admin_users_screen.dart';
 import '../screens/admin_reviews_screen.dart';
@@ -76,15 +79,11 @@ class AdminSidebar extends StatelessWidget {
           const Spacer(),
 
           const Divider(color: Colors.white12),
+
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextButton.icon(
-              onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false),
-              icon: const Icon(Icons.home_rounded, color: Colors.grey),
-              label: const Text('Volver al inicio', style: TextStyle(color: Colors.grey)),
-            ),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
+            child: _LogoutButton(),
           ),
-          const SizedBox(height: 10),
         ],
       ),
     );
@@ -120,6 +119,92 @@ class AdminSidebar extends StatelessWidget {
     );
   }
 }
+
+// ── Botón de cerrar sesión ────────────────────────────────────────────────────
+
+class _LogoutButton extends StatefulWidget {
+  @override
+  State<_LogoutButton> createState() => _LogoutButtonState();
+}
+
+class _LogoutButtonState extends State<_LogoutButton> {
+  bool _hovered = false;
+
+  Future<void> _logout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(AppConstants.surfaceColor),
+        title: const Text('Cerrar sesión',
+            style: TextStyle(color: Colors.white)),
+        content: const Text('¿Estás seguro de que quieres cerrar sesión?',
+            style: TextStyle(color: Colors.grey)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar',
+                style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(AppConstants.primaryColor),
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Cerrar sesión'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await context.read<AuthProvider>().logout();
+      context.read<UserProvider>().clear();
+      if (mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        onTap: _logout,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: _hovered
+                ? Colors.red.withOpacity(0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.logout_rounded,
+                color: _hovered ? Colors.red.shade300 : Colors.grey.shade500,
+                size: 20,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Cerrar sesión',
+                style: TextStyle(
+                  color: _hovered ? Colors.red.shade300 : Colors.grey.shade500,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Sidebar item ──────────────────────────────────────────────────────────────
 
 class _SidebarItem extends StatefulWidget {
   final IconData icon;
