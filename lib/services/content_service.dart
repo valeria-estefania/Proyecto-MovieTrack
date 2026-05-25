@@ -176,27 +176,43 @@ class ContentService {
     return [];
   }
 
+  static Future<List<dynamic>> getPlatforms() async {
+    final response = await http.get(
+      Uri.parse(AppConstants.platformsUrl),
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    return [];
+  }
 
-static Future<Content> getOrCreateContent(
-    Map<String, dynamic> tmdbItem, String type) async {
-  final tmdbId = tmdbItem['id'];
-  
-  // Busca en nuestra BD
-  final allContent = await getAllContent();
-  try {
-    return allContent.firstWhere((c) => c.tmdbId == tmdbId);
-  } catch (_) {
-    // No existe, lo guarda buscándolo por nombre
-    final query = tmdbItem['title'] ?? tmdbItem['name'] ?? '';
-    if (type == 'movie') {
-      final results = await searchMovies(query);
-      return results.firstWhere((c) => c.tmdbId == tmdbId);
-    } else {
-      final results = await searchTv(query);
-      return results.firstWhere((c) => c.tmdbId == tmdbId);
+  static Future<List<dynamic>> discoverByPlatform(int providerId, String type) async {
+    final response = await http.get(
+      Uri.parse('${AppConstants.discoverUrl}/$type/platform/$providerId'),
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    return [];
+  }
+
+
+  static Future<Content> getOrCreateContent(
+      Map<String, dynamic> tmdbItem, String type) async {
+    final tmdbId = tmdbItem['id'];
+    
+    // Busca en nuestra BD
+    final allContent = await getAllContent();
+    try {
+      return allContent.firstWhere((c) => c.tmdbId == tmdbId);
+    } catch (_) {
+      // No existe, lo guarda buscándolo por nombre
+      final query = tmdbItem['title'] ?? tmdbItem['name'] ?? '';
+      if (type == 'movie') {
+        final results = await searchMovies(query);
+        return results.firstWhere((c) => c.tmdbId == tmdbId);
+      } else {
+        final results = await searchTv(query);
+        return results.firstWhere((c) => c.tmdbId == tmdbId);
+      }
     }
   }
-}
 
 }
 

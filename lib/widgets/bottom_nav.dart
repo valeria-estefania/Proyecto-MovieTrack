@@ -6,8 +6,10 @@ class BottomNav extends StatelessWidget {
   const BottomNav({super.key, required this.currentIndex});
 
   void _onTap(BuildContext context, int index) {
-    final routes = ['/home', '/status', '/favorites', '/reviews', '/profile'];
     if (currentIndex == index) return;
+
+    const routes = ['/home', '/status', '/favorites', '/reviews', '/profile'];
+
     Navigator.pushReplacementNamed(context, routes[index]);
   }
 

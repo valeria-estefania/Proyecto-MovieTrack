@@ -73,6 +73,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Mis reseñas'),
       ),
       body: _isLoading

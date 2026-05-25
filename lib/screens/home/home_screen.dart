@@ -30,6 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool _isLoading = true;
 
+  List<dynamic> _platforms = [];
+  int? _selectedPlatformId;
+  String? _selectedPlatformName;
+
   @override
   void initState() {
     super.initState();
@@ -45,7 +49,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ContentService.getPopularTv(),
         ContentService.getTopRatedTv(),
         ContentService.getGenres(),
+        ContentService.getPlatforms(),
       ]);
+      print('PLATAFORMAS length: ${results[6].length}');
+      print('PLATAFORMAS primero: ${results[6].isNotEmpty ? results[6][0] : "VACIO"}');
+      print('GENEROS length: ${results[5].length}');
+      
 
       if (mounted) {
         setState(() {
@@ -55,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _popularTv = results[3];
           _topRatedTv = results[4];
           _genres = results[5];
+          _platforms = results[6];
           _isLoading = false;
         });
       }
@@ -81,7 +91,27 @@ class _HomeScreenState extends State<HomeScreen> {
       _selectedGenreId = null;
       _selectedGenreName = null;
       _filteredByGenre = [];
+      _selectedPlatformId = null;
+      _selectedPlatformName = null;
+      _filteredByGenre = [];
     });
+  }
+
+  Future<void> _filterByPlatform(int platformId, String platformName) async {
+    setState(() {
+      _selectedPlatformId = platformId;
+      _selectedPlatformName = platformName;
+      _selectedGenreId = null;
+      _selectedGenreName = null;
+      _filteredByGenre = [];
+    });
+
+    final results = await ContentService.discoverByPlatform(
+      platformId,
+      _contentType,
+    );
+
+    if (mounted) setState(() => _filteredByGenre = results);
   }
 
  void _navigateToDetail(Map<String, dynamic> item, String type) async {
@@ -241,15 +271,81 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(height: 16),
                         ],
 
+                        // Plataformas horizontales
+                        if (_platforms.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            height: 44,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              itemCount: _platforms.length,
+                              itemBuilder: (context, index) {
+                                final platform = _platforms[index];
+                                final isSelected =
+                                    _selectedPlatformId == platform['provider_id'];
+                                final logoPath = platform['logo_path'];
+
+                                return GestureDetector(
+                                  onTap: () => isSelected
+                                      ? _clearGenre()
+                                      : _filterByPlatform(
+                                          platform['provider_id'],
+                                          platform['provider_name'],
+                                        ),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? const Color(0xFFE50914)
+                                          : const Color(0xFF1F1F1F),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? const Color(0xFFE50914)
+                                            : Colors.grey.withOpacity(0.3),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        if (logoPath != null)
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(4),
+                                            child: Image.network(
+                                              'https://image.tmdb.org/t/p/w200$logoPath',
+                                              width: 24,
+                                              height: 24,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) =>
+                                                  const SizedBox(),
+                                            ),
+                                          ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          platform['provider_name'],
+                                          style: const TextStyle(
+                                              color: Colors.white, fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+
                         // Si hay filtro por género
-                        if (_selectedGenreId != null) ...[
+                        if (_selectedGenreId != null || _selectedPlatformId != null) ...[
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Row(
                               children: [
                                 Text(
-                                  _selectedGenreName ?? '',
+                                  _selectedGenreName ?? _selectedPlatformName ?? '',
                                   style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
@@ -259,8 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 TextButton(
                                   onPressed: _clearGenre,
                                   child: const Text('Ver todo',
-                                      style: TextStyle(
-                                          color: Color(0xFFE50914))),
+                                      style: TextStyle(color: Color(0xFFE50914))),
                                 ),
                               ],
                             ),
@@ -268,27 +363,26 @@ class _HomeScreenState extends State<HomeScreen> {
                           _HorizontalList(
                             items: _filteredByGenre,
                             type: _contentType,
-                            onTap: (item) =>
-                                _navigateToDetail(item, _contentType),
+                            onTap: (item) => _navigateToDetail(item, _contentType),
                           ),
                         ] else ...[
                           // Secciones normales
                           if (_contentType == 'movie') ...[
-                            _SectionTitle(title: '🔥 Populares'),
+                            _SectionTitle(title: 'Populares'),
                             _HorizontalList(
                               items: _popularMovies,
                               type: 'movie',
                               onTap: (item) =>
                                   _navigateToDetail(item, 'movie'),
                             ),
-                            _SectionTitle(title: '⭐ Mejor valoradas'),
+                            _SectionTitle(title: 'Mejor valoradas'),
                             _HorizontalList(
                               items: _topRatedMovies,
                               type: 'movie',
                               onTap: (item) =>
                                   _navigateToDetail(item, 'movie'),
                             ),
-                            _SectionTitle(title: '🎬 En cines'),
+                            _SectionTitle(title: 'En cines'),
                             _HorizontalList(
                               items: _nowPlaying,
                               type: 'movie',
@@ -296,14 +390,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   _navigateToDetail(item, 'movie'),
                             ),
                           ] else ...[
-                            _SectionTitle(title: '🔥 Series populares'),
+                            _SectionTitle(title: 'Series populares'),
                             _HorizontalList(
                               items: _popularTv,
                               type: 'tv',
                               onTap: (item) =>
                                   _navigateToDetail(item, 'tv'),
                             ),
-                            _SectionTitle(title: '⭐ Mejor valoradas'),
+                            _SectionTitle(title: 'Mejor valoradas'),
                             _HorizontalList(
                               items: _topRatedTv,
                               type: 'tv',

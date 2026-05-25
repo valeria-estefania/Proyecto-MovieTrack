@@ -66,6 +66,7 @@ class _StatusScreenState extends State<StatusScreen> with SingleTickerProviderSt
     return Scaffold(
       backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Mis estados'),
         bottom: TabBar(
           controller: _tabController,

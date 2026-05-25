@@ -40,6 +40,8 @@ class AppConstants {
   static const String tvTopRatedUrl = '$baseUrl/content/tv/top_rated';
   static const String movieByGenreUrl = '$baseUrl/content/movie/genre';
   static const String tvByGenreUrl = '$baseUrl/content/tv/genre';
+  static const String platformsUrl = '$baseUrl/content/tmdb/providers';
+  static const String discoverUrl = '$baseUrl/content/discover';
 
   // Colores de la app
   static const int primaryColor = 0xFFE50914;    // rojo Netflix

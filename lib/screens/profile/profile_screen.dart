@@ -93,6 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF141414),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Mi perfil'),
         actions: [
           IconButton(
